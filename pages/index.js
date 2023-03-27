@@ -55,7 +55,7 @@ export default function Home() {
       }
 
       // Update the result state variable with the generated name, and reset the animalInput state variable to an empty string
-      setResult(data.result);
+      setResult(data.result.join(', '));
       setAnimalInput("");
     } catch(error) {
       // If an error occurs during the process, log the error to the console and display an alert with the error message

@@ -35,14 +35,19 @@ export default async function (req, res) {
   }
 
   try {
-    // Create a new OpenAI completion request with the "model", "prompt", and "temperature" parameters set
+/*     // Create a new OpenAI completion request with the "model", "prompt", and "temperature" parameters set
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
       prompt: generatePrompt(animal),
       temperature: 0.6,
-    });
+      n: 5,
+    }); */
     // Extract the first generated name from the "choices" array in the completion response and return it as the result of the API request in a JSON object
-    res.status(200).json({ result: completion.data.choices[0].text });
+    
+    const names = await getUniqueNames(animal, 5);
+    res.status(200).json({ result: names});
+    console.log(names);
+
   } catch(error) {
     // If an error occurs, handle it and return a JSON object containing an error message
     if (error.response) {
@@ -63,14 +68,37 @@ export default async function (req, res) {
 function generatePrompt(animal) {
   const capitalizedAnimal =
     animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
+  return `Suggest a name for an animal that is a superhero.
 
 Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
+Names: Captain Sharpclaw
+
 Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
+Names: Ruff the Protector
+
 Animal: ${capitalizedAnimal}
 Names:`;
 }
 
 
+async function getUniqueNames(animal, count){
+  const uniqueNames = new Set();
+  while (uniqueNames.size < count){
+    const completion = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: generatePrompt(animal),
+      temperature: 0.6,
+      n: Math.min(5, count - uniqueNames.size),
+    });
+ 
+  const newNames = completion.data.choices
+  .map((choice) => choice.text.trim().split('/n')[0]);
+
+  for (const name of newNames){
+    uniqueNames.add(name);
+  }
+}
+
+return Array.from(uniqueNames);
+
+}
