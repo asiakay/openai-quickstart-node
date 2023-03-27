@@ -97,7 +97,7 @@ async function getUniqueNames(animal, count){
   for (const name of newNames){
     uniqueNames.add(name);
   }
-}
+ }
 
 return Array.from(uniqueNames);
 

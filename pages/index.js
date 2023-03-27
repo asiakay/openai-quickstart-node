@@ -13,7 +13,10 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   // state variable inputError using the useState hook
   const [inputError, setInputError] = useState(null);
-  
+  // state variable to store the error message and display it conditionally
+  const [apiError, setApiError] = useState(null);
+
+
   // Define an asynchronous function called onSubmit that handles the form submission event
   async function onSubmit(event) {
     event.preventDefault();
@@ -57,10 +60,11 @@ export default function Home() {
       // Update the result state variable with the generated name, and reset the animalInput state variable to an empty string
       setResult(data.result.join(', '));
       setAnimalInput("");
+      setApiError(null);
     } catch(error) {
       // If an error occurs during the process, log the error to the console and display an alert with the error message
       console.error(error);
-      alert(error.message);
+      setApiError(error.message);
     } finally {
       // set the isLoading state to true when the API request starts and to false when it completes or if an error occurs:
       setIsLoading(false);
@@ -115,7 +119,8 @@ function validateInput(input) {
 
         {/* display the validation error message in the Home component if inputError is not null */}
         <div className={styles.errorMessage}>{inputError}</div>
-       
+        <div className={styles.errorMessage}>{apiError}</div>
+
         <div className={styles.result}>
           {/* conditionally render the LoadingIndicator component based on the isLoading state */}
           {isLoading ? <LoadingIndicator /> : result }
